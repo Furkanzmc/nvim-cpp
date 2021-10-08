@@ -87,11 +87,6 @@ SCENARIO("An API error is raised.", "[nvim::generated_api]")
 
     REQUIRE(connection.socket->is_open());
 
-    nvim::api::nvim_command(
-      connection,
-      "if exists(':DuplicateCommand') | delcommand DuplicateCommand | endif",
-      [](const auto& response) { REQUIRE(response.error.code == -1); });
-
     nvim::api::nvim_command(connection,
                             "command DuplicateCommand :echo 'Hello'");
 
@@ -99,11 +94,9 @@ SCENARIO("An API error is raised.", "[nvim::generated_api]")
     nvim::api::nvim_command(connection,
                             "command DuplicateCommand :echo 'Hello'",
                             [&error_ocurred](const auto& response) {
-                                error_ocurred = response.error.message.size();
+                                error_ocurred = static_cast<int>(
+                                  response.error.message.size());
                             });
-
-    nvim::api::nvim_command(connection,
-                            "command DuplicateCommand :echo 'Hello'");
 
     CHECK_THROWS_AS(nvim::api::nvim_command(
                       connection, "command DuplicateCommand :echo 'Hello'"),

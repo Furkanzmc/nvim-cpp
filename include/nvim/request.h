@@ -4,8 +4,7 @@
 #include "nvim/types.h"
 #include "nvim/defs.h"
 
-namespace nvim {
-namespace types {
+namespace nvim::types {
 
 struct request {
     struct _args {
@@ -72,18 +71,18 @@ template<typename T>
   NVIM_NOEXCEPT
 {
     msgpack::packer<msgpack::sbuffer> pk{ os.buffer };
-    pk.pack_array(value.size());
+    const auto value_size = static_cast<std::uint32_t>(value.size());
+    pk.pack_array(value_size);
 
     for (const auto& entry : value) {
         os << entry;
     }
 
-    os.count -= value.size();
+    os.count -= value_size;
     os.count++;
     return os;
 }
 
-}
 }
 
 #endif

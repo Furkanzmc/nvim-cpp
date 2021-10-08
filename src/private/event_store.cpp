@@ -11,9 +11,7 @@ std::mutex s_eq_mutex;
 std::mutex s_rc_mutex;
 }
 
-namespace nvim {
-namespace api {
-namespace detail {
+namespace nvim::api::detail {
 void push_response_callback(nvim::types::uinteger_t msg_id,
                             nvim::types::response_callback callback)
   NVIM_NOEXCEPT
@@ -79,7 +77,5 @@ bool has_event() NVIM_NOEXCEPT
 {
     std::lock_guard<std::mutex> lg{ s_eq_mutex };
     return s_event_queue.size() > 0;
-}
-}
 }
 }

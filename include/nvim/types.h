@@ -13,15 +13,11 @@
 #include <string>
 #include <map>
 
-namespace boost {
-namespace system {
+namespace boost::system {
 class error_code;
 }
-}
 
-namespace nvim {
-
-namespace types {
+namespace nvim::types {
 struct response;
 
 using bool_t = bool;
@@ -63,7 +59,6 @@ enum class message_type : std::uint8_t {
     response = 1,
     notification = 2
 };
-}
 }
 
 #endif

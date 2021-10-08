@@ -1,0 +1,98 @@
+name: Build And Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build_test:
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # FIXME: Disabled until fixed: https://github.com/Furkanzmc/nvim-cpp/issues/2
+          # - name: Linux
+          #   build_type: Debug
+          #   runner: ubuntu-latest
+          #   generator: Ninja
+          #   cc: gcc
+          #   cxx: g++
+
+          - name: MacOS
+            build_type: Debug
+            runner: macos-latest
+            generator: Ninja
+            cc: clang
+            cxx: clang++
+
+          - name: Windows
+            build_type: Debug
+            runner: windows-latest
+            generator: Visual Studio 16 2019
+
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v2
+
+      #
+      # Setup and Configuration
+      #
+      - name: Linux - Setup
+        if: ${{ startsWith(matrix.runner, 'ubuntu') }}
+        run: |
+          sudo add-apt-repository -y ppa:neovim-ppa/stable
+          sudo apt-get install -y neovim ninja-build
+          sudo apt-get update -y
+
+      - name: MacOS - Setup
+        if: ${{ startsWith(matrix.runner, 'macos') }}
+        run: |
+          brew install neovim --fetch-HEAD
+          brew install python@3.9
+          brew ls --formula | grep -wq ninja || brew install ninja
+
+      - name: Windows - Setup
+        if: ${{ startsWith(matrix.runner, 'windows') }}
+        run: |
+          New-Item -Path .\build -Name "build" -ItemType "directory"
+          Invoke-WebRequest https://github.com/neovim/neovim/releases/download/v0.5.1/nvim-win64.zip -OutFile nvim-win64.zip
+          Expand-Archive -Path nvim-win64.zip -DestinationPath .\build\
+          Add-Content -Path $env:GITHUB_PATH -Value ${{ github.workspace }}\build\Neovim\bin\
+
+      #
+      # Build and Test
+      #
+      - name: Neovim Version
+        run: nvim --version
+
+      - name: Configure
+        env:
+          CMAKE_BUILD_TYPE: ${{ matrix.build_type }}
+          CMAKE_GENERATOR: ${{ matrix.generator }}
+        run: >
+          cmake -B ./build
+          -G "${{ matrix.generator }}"
+          -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_C_COMPILER=${{ matrix.cc }}
+          -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
+
+      - name: Build
+        run: cmake --build ${{ github.workspace }}/build --parallel 12
+
+      - name: Test Linux
+        if: ${{ startsWith(matrix.runner, 'ubuntu') }}
+        uses: GabrielBB/xvfb-action@v1 # Required by Linux, no X11 $DISPLAY
+        with:
+          working-directory: ${{ github.workspace }}
+          run: cmake --build ./build/ --target check
+
+      - name: Test macOS/Windows
+        if: ${{ !startsWith(matrix.runner, 'ubuntu') }}
+        working-directory: ${{ github.workspace }}
+        run: cmake --build ./build/ --target check

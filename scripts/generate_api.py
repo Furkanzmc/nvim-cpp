@@ -2,9 +2,11 @@
 
 import re
 from jinja2 import Environment, FileSystemLoader
-import msgpack, subprocess
+import msgpack
 import logging as log
-from subprocess import run
+from subprocess import run, check_output
+from shutil import which
+from typing import Optional
 
 
 class invalid_type(Exception):
@@ -72,7 +74,7 @@ def generate_api():
     header_template = env.get_template("nvim_api_generated.h")
     imp_template = env.get_template("nvim_api_generated.cpp")
 
-    api_info = subprocess.check_output(["nvim", "--api-info"])
+    api_info = check_output(["nvim", "--api-info"])
     unpacked_api = msgpack.unpackb(api_info)
 
     functions = []
@@ -124,8 +126,10 @@ def generate_api():
             )
         )
 
-    run(["clang-format", "-i", header_file], capture_output=True)
-    run(["clang-format", "-i", imp_file], capture_output=True)
+    clang_format: Optional[str] = which("clang-format")
+    if clang_format:
+        run(["clang-format", "-i", header_file], capture_output=True)
+        run(["clang-format", "-i", imp_file], capture_output=True)
 
 
 def main():

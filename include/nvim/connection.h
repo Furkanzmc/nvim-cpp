@@ -5,10 +5,8 @@
 
 #include <boost/asio/ip/tcp.hpp>
 
-namespace boost {
-namespace asio {
+namespace boost::asio {
 class io_context;
-}
 }
 
 namespace nvim {

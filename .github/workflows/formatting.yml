@@ -1,0 +1,77 @@
+---
+name: Formatting
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  clang_format_diff:
+    name: clang_format
+    if: github.event_name == 'pull_request'
+    strategy:
+      fail-fast: false
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup PR Branch
+        run: git branch ${{ github.base_ref }} origin/${{ github.base_ref }}
+
+      - name: Install clang-format
+        run: >
+          brew install clang-format
+
+      - name: Run clang-format
+        run: >
+          git diff ${{ github.base_ref }} --name-only | grep -e "\.cpp$" -e "\.h$" | grep -v "templates/nvim_api_generated" | xargs clang-format -i --style="{BasedOnStyle: Mozilla, AccessModifierOffset: '-4', AlignAfterOpenBracket: Align, AlignConsecutiveAssignments: 'false', AlignConsecutiveDeclarations: 'false', AlignEscapedNewlines: Left, AlignOperands: 'true', AllowShortBlocksOnASingleLine: 'false', AllowShortCaseLabelsOnASingleLine: 'false', AllowShortFunctionsOnASingleLine: None, AllowShortIfStatementsOnASingleLine: Never, AllowShortLambdasOnASingleLine: Inline, AlwaysBreakAfterDefinitionReturnType: None, AlwaysBreakAfterReturnType: None, IndentWidth: '4', SortIncludes: 'true', SortUsingDeclarations: 'true', SpacesInParentheses: 'false', SpacesInSquareBrackets: 'false', Standard: Cpp11, TabWidth: '4', UseTab: Never, SortIncludes: 'false', BreakBeforeBraces: 'Stroustrup',}" && git diff > clang_format.patch && git reset --hard
+
+      - name: Detect clang_format Changes
+        run: |
+          if [ -s clang_format.patch ]; then
+            echo "changes_detected=true" >> $GITHUB_ENV
+          else
+            echo "changes_detected=false" >> $GITHUB_ENV
+          fi
+
+      - name: Upload Artifacts
+        if: fromJSON(env.changes_detected)
+        uses: actions/upload-artifact@v2
+        with:
+          name: clang_format Patch
+          path: clang_format.patch
+
+      - name: Patch File
+        run: |
+          if [ -s clang_format.patch ]; then
+            cat clang_format.patch
+          fi
+
+      - name: Check Validity
+        run: |
+          if [ -s clang_format.patch ]; then
+            echo "+-----------------------------------------------------------+"
+            echo "|                          CLANG FORMAT FAILURE             |"
+            echo "+-----------------------------------------------------------+"
+            echo "|                                                           |"
+            echo "| Your changes are not clang-format compliant!              |"
+            echo "|                                                           |"
+            echo "| An Artifact 'clang_format Patch' was uploaded.            |"
+            echo "|                                                           |"
+            echo "| Consider inspecting and applying 'clang_format.patch':    |"
+            echo "|   git apply clang_format.patch                            |"
+            echo "|                                                           |"
+            echo "| The contents of 'clang_format.patch' is printed below.    |"
+            echo "|                                                           |"
+            echo "+-----------------------------------------------------------+"
+            cat clang_format.patch
+            echo "------------------------------------------------------------"
+            exit 1
+          fi

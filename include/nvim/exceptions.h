@@ -60,8 +60,12 @@ public:
 
     const char* what() const noexcept override final
     {
-        const auto message = m_error_code ? m_error_code.message() : m_message;
+        const auto& message = m_error_code ? m_error_code.message() : m_message;
+#ifdef _WIN32
+        return _strdup(message.c_str());
+#else
         return strndup(message.c_str(), message.size());
+#endif
     }
 
 private:
