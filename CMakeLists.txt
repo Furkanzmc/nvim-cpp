@@ -19,17 +19,23 @@ set(PROJECT_SOURCES
   src/private/event_store.cpp
   )
 
-find_package(PythonInterp)
-if (PYTHONINTERP_FOUND)
+find_package(Python3 COMPONENTS Interpreter)
+if (Python3_FOUND)
   execute_process(
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/generate_api.py
+    COMMAND ${Python3_EXECUTABLE} -m pip install -r ${CMAKE_SOURCE_DIR}/scripts/requirements.txt
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_QUIET
+    COMMAND_ECHO NONE
+    )
+  execute_process(
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/generate_api.py
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     OUTPUT_QUIET
     COMMAND_ECHO NONE
     )
 else()
   message(FATAL "Python executable is not found.")
-endif(PYTHONINTERP_FOUND)
+endif(Python3_FOUND)
 
 list(APPEND PROJECT_SOURCES src/generated/nvim_api_generated.cpp)
 

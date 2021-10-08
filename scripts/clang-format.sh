@@ -33,9 +33,6 @@ if [ -z ${BRANCH_POINT} ]; then
 	BRANCH_POINT=$(git merge-base --fork-point ${BRANCH_POINT})
 fi
 
-# Copy `.clang-format`, skipping if one already exists
-cp -n contrib/clang-format.txt .clang-format
-
 # Apply all clang-format-diff changes to the working directory
 git diff -U0 --no-color ${BRANCH_POINT} -- ${DIFF_FILTER_LIST} | ${CLANG_FORMAT_DIFF} -i -p1
 
