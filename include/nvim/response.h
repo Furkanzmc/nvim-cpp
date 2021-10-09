@@ -6,9 +6,7 @@
 
 #include <string>
 
-namespace nvim {
-
-namespace types {
+namespace nvim::types {
 
 struct response {
     struct error {
@@ -53,6 +51,5 @@ struct response {
     const error error;
     const types::string_t notification;
 };
-}
 }
 #endif

@@ -99,7 +99,8 @@ SCENARIO("An API error is raised.", "[nvim::generated_api]")
     nvim::api::nvim_command(connection,
                             "command DuplicateCommand :echo 'Hello'",
                             [&error_ocurred](const auto& response) {
-                                error_ocurred = response.error.message.size();
+                                error_ocurred = static_cast<int>(
+                                  response.error.message.size());
                             });
 
     nvim::api::nvim_command(connection,

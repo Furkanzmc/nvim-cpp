@@ -201,11 +201,12 @@ nvim::types::request setup_request(const std::string& method,
 
     const auto msg_id = ++s_last_msg_id;
     // msg_id
-    pk.pack_int(msg_id);
+    pk.pack_uint64(msg_id);
 
     // method
-    pk.pack_bin(method.size());
-    pk.pack_bin_body(method.c_str(), method.size());
+    const auto method_size = static_cast<std::uint32_t>(method.size());
+    pk.pack_bin(method_size);
+    pk.pack_bin_body(method.c_str(), method_size);
 
     // arguments
     pk.pack_array(arg_count);

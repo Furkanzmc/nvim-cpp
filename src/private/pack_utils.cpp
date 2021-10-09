@@ -1,8 +1,6 @@
 #include "nvim/private/pack_utils.h"
 
-namespace nvim {
-namespace types {
-namespace impl {
+namespace nvim::types::impl {
 
 void pack(msgpack::packer<msgpack::sbuffer>& pk,
           const nvim::types::object_t& value) NVIM_NOEXCEPT
@@ -35,7 +33,7 @@ void pack(msgpack::packer<msgpack::sbuffer>& pk,
         impl::pack(pk, value.as_multimap());
     }
     else {
-        assert("Wrong type." == 0);
+        assert(false);
     }
 }
 
@@ -67,8 +65,9 @@ void pack(msgpack::packer<msgpack::sbuffer>& pk, double value) NVIM_NOEXCEPT
 void pack(msgpack::packer<msgpack::sbuffer>& pk,
           const std::string& value) NVIM_NOEXCEPT
 {
-    pk.pack_str(value.size());
-    pk.pack_str_body(value.c_str(), value.size());
+    const auto size = static_cast<std::uint32_t>(value.size());
+    pk.pack_str(size);
+    pk.pack_str_body(value.c_str(), size);
 }
 
 void pack(msgpack::packer<msgpack::sbuffer>& pk, std::byte value) NVIM_NOEXCEPT
@@ -96,7 +95,7 @@ void pack(msgpack::packer<msgpack::sbuffer>& pk,
 void pack(msgpack::packer<msgpack::sbuffer>& pk,
           const nvim::types::array_t& value) NVIM_NOEXCEPT
 {
-    pk.pack_array(value.size());
+    pk.pack_array(static_cast<std::uint32_t>(value.size()));
     for (const nvim::types::object_t& var : value) {
         pack(pk, var);
     }
@@ -105,14 +104,15 @@ void pack(msgpack::packer<msgpack::sbuffer>& pk,
 void pack(msgpack::packer<msgpack::sbuffer>& pk,
           const std::vector<char>& value) NVIM_NOEXCEPT
 {
-    pk.pack_bin(value.size());
-    pk.pack_bin_body(value.data(), value.size());
+    const auto size = static_cast<std::uint32_t>(value.size());
+    pk.pack_bin(size);
+    pk.pack_bin_body(value.data(), size);
 }
 
 void pack(msgpack::packer<msgpack::sbuffer>& pk,
           const nvim::types::map_t& value) NVIM_NOEXCEPT
 {
-    pk.pack_map(value.size());
+    pk.pack_map(static_cast<std::uint32_t>(value.size()));
     for (const auto& pair : value) {
         pack(pk, pair.first);
         pack(pk, pair.second);
@@ -122,13 +122,11 @@ void pack(msgpack::packer<msgpack::sbuffer>& pk,
 void pack(msgpack::packer<msgpack::sbuffer>& pk,
           const nvim::types::multimap_t& value) NVIM_NOEXCEPT
 {
-    pk.pack_map(value.size());
+    pk.pack_map(static_cast<std::uint32_t>(value.size()));
     for (const auto& pair : value) {
         pack(pk, pair.first);
         pack(pk, pair.second);
     }
 }
 
-}
-}
 }

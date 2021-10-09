@@ -3,8 +3,7 @@
 #include "nvim/generated/nvim_api_generated.h"
 #include "nvim/exceptions.h"
 
-namespace nvim {
-namespace types {
+namespace nvim::types {
 
 response::_value::operator std::nullptr_t() const NVIM_NOEXCEPT
 {
@@ -26,10 +25,10 @@ response::_value::operator int() const NVIM_NOEXCEPT
     }
 
     if (value.is_int64_t()) {
-        return value.as_int64_t();
+        return static_cast<int>(value.as_int64_t());
     }
 
-    return value.as_uint64_t();
+    return static_cast<int>(value.as_uint64_t());
 }
 
 response::_value::operator integer_t() const NVIM_NOEXCEPT
@@ -176,5 +175,4 @@ const object_t& response::_value::operator*() const NVIM_NOEXCEPT
     return value;
 }
 
-}
 }

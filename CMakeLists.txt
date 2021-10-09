@@ -48,6 +48,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   message(STATUS "No options set for GNU.")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   target_compile_options(nvim-cpp PRIVATE /W4 /WX)
+  target_compile_definitions(nvim-cpp PUBLIC -D_WIN32)
 endif()
 
 target_include_directories(nvim-cpp PRIVATE
@@ -68,14 +69,5 @@ if (NVIM_CPP_ENABLE_TESTS)
   add_subdirectory(test/)
 endif()
 
-include(FetchContent)
-FetchContent_Declare(
-  fmt
-  GIT_REPOSITORY https://github.com/fmtlib/fmt
-  GIT_TAG        8.0.1
-  )
-
-FetchContent_MakeAvailable(fmt)
-
 target_link_libraries(nvim-cpp
-  PRIVATE ${MSGPACK_LIBRARIES} fmt::fmt-header-only)
+  PRIVATE ${MSGPACK_LIBRARIES})

@@ -6,7 +6,7 @@
 #include "nvim/response.h"
 #include "nvim/private/event_store.h"
 
-#include <fmt/core.h>
+#include <iostream>
 
 namespace {
 
@@ -143,7 +143,7 @@ std::vector<nvim::ui_events::generic_ui_event> parse_events(
         }
         {% endfor %}
         else {
-            fmt::print(stderr, "Unsupported event: {}\n", event_name);
+            std::cerr << "Unsupported event: " << event_name << '\n';
         }
     }
 

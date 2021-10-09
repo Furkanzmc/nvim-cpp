@@ -15,6 +15,11 @@ if [ -n "$(git status --porcelain)" ]; then
 	exit 1
 fi
 
+if [ -z .clang-format ]; then
+	echo "[clang-format] ERROR: .clang-format file doesn't exist."
+	exit 1
+fi
+
 # The tool clang-format-diff.py does not have a standard location.
 if [ -z ${CLANG_FORMAT_DIFF} ] || [ ! -x ${CLANG_FORMAT_DIFF} ]; then
 	echo "[clang-format] ERROR: Please set CLANG_FORMAT_DIFF and retry"

@@ -7,8 +7,7 @@
 
 #include <msgpack/unpack.hpp>
 
-namespace nvim {
-namespace types {
+namespace nvim::types {
 
 request::_args& operator<<(request::_args& os, int value) NVIM_NOEXCEPT
 {
@@ -136,6 +135,5 @@ request::_args& operator<<(request::_args& os,
     os.count++;
 
     return os;
-}
 }
 }

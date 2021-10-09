@@ -9,7 +9,7 @@ endif (POLICY CMP0048)
 project(nvim-cpp-deps)
 
 set(NVIM_CPP_THIRD_PARTY_ARTIFACTS ${CMAKE_CURRENT_SOURCE_DIR}/artifacts)
-set(MSGPACK_USE_STATIC_BOOST ON)
+set(MSGPACK_USE_STATIC_BOOST OFF)
 
 # boost {{{
 

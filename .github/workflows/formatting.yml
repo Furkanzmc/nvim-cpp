@@ -58,9 +58,9 @@ jobs:
       - name: Check Validity
         run: |
           if [ -s clang_format.patch ]; then
-            echo "------------------------------------------------------------+"
+            echo "+-----------------------------------------------------------+"
             echo "|                          CLANG FORMAT FAILURE             |"
-            echo "------------------------------------------------------------"
+            echo "+-----------------------------------------------------------+"
             echo "|                                                           |"
             echo "| Your changes are not clang-format compliant!              |"
             echo "|                                                           |"
@@ -71,7 +71,7 @@ jobs:
             echo "|                                                           |"
             echo "| The contents of 'clang_format.patch' is printed below.    |"
             echo "|                                                           |"
-            echo "------------------------------------------------------------"
+            echo "+-----------------------------------------------------------+"
             cat clang_format.patch
             echo "------------------------------------------------------------"
             exit 1

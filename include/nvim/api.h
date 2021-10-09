@@ -13,9 +13,7 @@ struct request;
 struct response;
 }
 
-namespace api {
-
-namespace detail {
+namespace api::detail {
 
 boost::system::error_code wait_read(const nvim::types::connection& connection)
   NVIM_NOEXCEPT;
@@ -60,7 +58,6 @@ void validate_msgpack_object(const msgpack::object& object);
 
 void get_response_async(const nvim::types::connection& connection,
                         nvim::types::response_callback callback) NVIM_NOEXCEPT;
-}
 }
 }
 
