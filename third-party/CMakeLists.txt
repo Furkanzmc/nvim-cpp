@@ -8,7 +8,7 @@ endif(POLICY CMP0048)
 project(nvim-cpp-deps)
 
 set(NVIM_CPP_THIRD_PARTY_ARTIFACTS ${CMAKE_CURRENT_SOURCE_DIR}/artifacts)
-set(MSGPACK_USE_STATIC_BOOST OFF)
+set(MSGPACK_USE_STATIC_BOOST ON)
 
 # boost {{{
 
@@ -47,42 +47,37 @@ else()
     list(JOIN _BOOST_BUILD_COMPONENTS "," BOOST_COMPONENTS_TO_BUILD)
     message(STATUS "Building boost components: ${BOOST_COMPONENTS_TO_BUILD}")
 
+    set(BOOST_BUILD_WITH )
+    foreach(component IN LISTS _BOOST_BUILD_COMPONENTS)
+      list(APPEND BOOST_BUILD_WITH "--with-${component}")
+    endforeach()
+    list(JOIN BOOST_BUILD_WITH "," BOOST_BUILD_WITH_ARGS)
+
     if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-      execute_process(
-        COMMAND bootstrap.bat --with-libraries=${BOOST_COMPONENTS_TO_BUILD}
-        WORKING_DIRECTORY ${NVIM_CPP_THIRD_PARTY_ARTIFACTS}/${BOOST_FOLDER_NAME}
-        RESULT_VARIABLE rv)
-
-      if(NOT rv EQUAL 0)
-        message(FATAL_ERROR "Failed to configure boost build.")
-      endif()
-
-      execute_process(
-        COMMAND b2.exe
-        WORKING_DIRECTORY ${NVIM_CPP_THIRD_PARTY_ARTIFACTS}/${BOOST_FOLDER_NAME}
-        RESULT_VARIABLE rv)
-
-      if(NOT rv EQUAL 0)
-        message(FATAL_ERROR "Failed to configure boost build.")
-      endif()
+      set(BOOST_BOOTSTRAP bootstrap.bat)
+      set(BOOST_B2 b2.exe)
     else()
-      execute_process(
-        COMMAND ./bootstrap.sh --with-libraries=${BOOST_COMPONENTS_TO_BUILD}
-        WORKING_DIRECTORY ${NVIM_CPP_THIRD_PARTY_ARTIFACTS}/${BOOST_FOLDER_NAME}
-        RESULT_VARIABLE rv)
+      set(BOOST_BOOTSTRAP bootstrap.sh)
+      set(BOOST_B2 b2)
+    endif()
 
-      if(NOT rv EQUAL 0)
-        message(FATAL_ERROR "Failed to configure boost build.")
-      endif()
+    execute_process(
+      COMMAND ${BOOST_BOOTSTRAP} --with-libraries=${BOOST_COMPONENTS_TO_BUILD}
+      WORKING_DIRECTORY ${NVIM_CPP_THIRD_PARTY_ARTIFACTS}/${BOOST_FOLDER_NAME}
+      RESULT_VARIABLE rv)
 
-      execute_process(
-        COMMAND ./b2
-        WORKING_DIRECTORY ${NVIM_CPP_THIRD_PARTY_ARTIFACTS}/${BOOST_FOLDER_NAME}
-        RESULT_VARIABLE rv)
+    if(NOT rv EQUAL 0)
+      message(FATAL_ERROR "Failed to configure boost build.")
+    endif()
 
-      if(NOT rv EQUAL 0)
-        message(FATAL_ERROR "Failed to configure boost build.")
-      endif()
+    string(TOLOWER ${CMAKE_BUILD_TYPE} _BOOST_VARIANT_TYPE)
+    execute_process(
+      COMMAND ${BOOST_B2} ${BOOST_BUILD_WITH_ARGS} variant=${_BOOST_VARIANT_TYPE}
+      WORKING_DIRECTORY ${NVIM_CPP_THIRD_PARTY_ARTIFACTS}/${BOOST_FOLDER_NAME}
+      RESULT_VARIABLE rv)
+
+    if(NOT rv EQUAL 0)
+      message(FATAL_ERROR "Failed to configure boost build.")
     endif()
   endif()
 endif()

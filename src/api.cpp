@@ -435,7 +435,7 @@ nvim::types::response get_response(const nvim::types::connection& connection,
 void get_response_async(const nvim::types::connection& connection,
                         nvim::types::response_callback callback) NVIM_NOEXCEPT
 {
-    std::shared_ptr<msgpack::unpacker> unpacker{ new msgpack::unpacker{} };
+    auto unpacker{ new msgpack::unpacker{} };
     unpacker->reserve_buffer(32 * 1024ul);
 
     nvim::api::detail::read_async(
@@ -470,6 +470,8 @@ void get_response_async(const nvim::types::connection& connection,
               callback(nvim::types::response{
                 {}, nvim::types::message_type::notification, {}, {}, "" });
           }
+
+          delete unpacker;
       });
 }
 }

@@ -75,16 +75,24 @@ jobs:
           CMAKE_GENERATOR: ${{ matrix.generator }}
         run: >
           cmake -B ./build
+          -G "${{ matrix.generator }}"
           -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           -DCMAKE_C_COMPILER=${{ matrix.cc }}
           -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
 
       - name: Build
         run: cmake --build ${{ github.workspace }}/build --parallel
 
-      - name: Test
+      - name: Test macOS
         if: ${{ !startsWith(matrix.runner, 'windows') }}
         uses: GabrielBB/xvfb-action@v1 # Required by Linux, no X11 $DISPLAY
         with:
           working-directory: ${{ github.workspace }}/build
           run: ctest --output-on-failure -C build/test
+
+      - name: Test Windows
+        if: ${{ startsWith(matrix.runner, 'windows') }}
+        with:
+          working-directory: ${{ github.workspace }}/build
+          run: ctest --output-on-failure -C build/test/Debug

@@ -21,22 +21,36 @@ list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(CTest)
 include(Catch)
 
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  set(Boost_DEBUG ON)
+else()
+  set(Boost_DEBUG OFF)
+endif()
+
+set(Boost_USE_STATIC_LIBS ON)
 set(BOOST_ROOT ${_BOOST_ROOT})
 find_package(Boost REQUIRED COMPONENTS filesystem)
-message("BOOST_FOUND: ${Boost_FILESYSTEM_FOUND}")
-message("BOOST_FOUND_LIB: ${Boost_FILESYSTEM_LIBRARY}")
 
 set(TEST_LIBRARIES Catch2::Catch2WithMain nvim::cpp ${MSGPACK_LIBRARIES})
+link_directories(${Boost_LIBRARY_DIRS})
 
 set(TEST_INCLUDE_DIRS ${MSGPACK_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ../include/)
 
-# if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-#   link_directories(nvim-cpp PRIVATE /W4 /WX)
-# endif()
+set(TEST_COMPILE_DEFINITIONS )
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  list(APPEND TEST_COMPILE_DEFINITIONS -D_WIN32 )
+  # NOTE: We need to have this here so that boost picks the correct io_context implementation.
+  # See: https://stackoverflow.com/a/41068811
+  list(APPEND TEST_COMPILE_DEFINITIONS -D_WIN32_WINNT=0x0A00)
+endif()
 
 add_executable(connection_tests connection.cpp)
 add_executable(api_tests api.cpp)
 add_executable(generated_api_tests generated_api.cpp)
+
+target_compile_definitions(connection_tests PUBLIC ${TEST_COMPILE_DEFINITIONS})
+target_compile_definitions(api_tests PUBLIC ${TEST_COMPILE_DEFINITIONS})
+target_compile_definitions(generated_api_tests PUBLIC ${TEST_COMPILE_DEFINITIONS})
 
 target_link_libraries(connection_tests PRIVATE ${TEST_LIBRARIES})
 target_link_libraries(api_tests PRIVATE ${TEST_LIBRARIES})

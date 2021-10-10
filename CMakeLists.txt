@@ -41,12 +41,18 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   message(STATUS "No options set for GNU.")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   target_compile_options(nvim-cpp PRIVATE /W4 /WX)
-  target_compile_definitions(nvim-cpp PUBLIC -D_WIN32)
+  target_compile_definitions(nvim-cpp PUBLIC -D_WIN32 -D_WIN32_WINNT=0x0A00)
+endif()
+
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  set(Boost_DEBUG ON)
+else()
+  set(Boost_DEBUG OFF)
 endif()
 
 target_include_directories(nvim-cpp PRIVATE include/)
 
-if(NVIM_CPP_ENABLE_TESTS)
+if((NVIM_CPP_ENABLE_TESTS) AND (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"))
   set(_BOOST_BUILD_COMPONENTS
       filesystem
       CACHE INTERNAL "Boost libraries to build.")

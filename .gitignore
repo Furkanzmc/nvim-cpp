@@ -34,3 +34,4 @@
 third-party/artifacts/
 include/nvim/generated/nvim_api_generated.h
 src/generated/nvim_api_generated.cpp
+build/

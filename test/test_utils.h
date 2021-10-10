@@ -5,6 +5,9 @@
 
 struct nvim_process {
     boost::process::child nvim{ NVIM_PATH,
+                                "-u",
+                                "NORC",
+                                "--noplugins",
                                 "--headless",
                                 "--listen",
                                 "127.0.0.1:6667" };
