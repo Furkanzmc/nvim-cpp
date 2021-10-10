@@ -39,7 +39,7 @@ if [ -z ${BRANCH_POINT} ]; then
 fi
 
 # Apply all clang-format-diff changes to the working directory
-git diff -U0 --no-color ${BRANCH_POINT} -- ${DIFF_FILTER_LIST} | ${CLANG_FORMAT_DIFF} -i -p1
+git diff -U0 --no-color ${BRANCH_POINT} -- ${DIFF_FILTER_LIST} | ${CLANG_FORMAT_DIFF} -i -p1 -style=file
 
 # Create patch file of all clang-format suggested changes
 git diff > clang_format.patch

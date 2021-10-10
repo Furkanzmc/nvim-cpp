@@ -28,11 +28,13 @@ jobs:
             generator: Ninja
             cc: clang
             cxx: clang++
+            test_filder: test/
 
           - name: Windows
             build_type: Debug
             runner: windows-latest
             generator: Visual Studio 16 2019
+            test_filder: test/Debug
 
     runs-on: ${{ matrix.runner }}
     steps:
@@ -84,15 +86,9 @@ jobs:
       - name: Build
         run: cmake --build ${{ github.workspace }}/build --parallel
 
-      - name: Test macOS
+      - name: Test
         if: ${{ !startsWith(matrix.runner, 'windows') }}
         uses: GabrielBB/xvfb-action@v1 # Required by Linux, no X11 $DISPLAY
         with:
           working-directory: ${{ github.workspace }}/build
-          run: ctest --output-on-failure -C build/test
-
-      - name: Test Windows
-        if: ${{ startsWith(matrix.runner, 'windows') }}
-        with:
-          working-directory: ${{ github.workspace }}/build
-          run: ctest --output-on-failure -C build/test/Debug
+          run: ctest --output-on-failure -C ${{ matrix.test_filder }}
