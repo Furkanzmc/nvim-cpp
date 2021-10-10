@@ -28,13 +28,13 @@ jobs:
             generator: Ninja
             cc: clang
             cxx: clang++
-            test_folder: test/
+            test_folder: build/test/
 
           - name: Windows
             build_type: Debug
             runner: windows-latest
             generator: Visual Studio 16 2019
-            test_folder: test/Debug
+            test_folder: build/test/Debug
 
     runs-on: ${{ matrix.runner }}
     steps:
@@ -94,4 +94,5 @@ jobs:
           run: ctest --output-on-failure -C ${{ matrix.test_folder }}
 
       - name: Test macOS/Windows
-        run: ctest --output-on-failure -C build/${{ matrix.test_folder }}
+        working-directory: ${{ github.workspace }}/${{ matrix.test_folder }}
+        run: ls && ctest --output-on-failure
