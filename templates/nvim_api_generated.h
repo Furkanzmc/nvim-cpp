@@ -1,4 +1,5 @@
 // Adapted from https://github.com/DaikiMaekawa/neovim.cpp/blob/master/templates/nvim.hpp
+// clang-format off
 #ifndef NVIM_CPP_API_GENERATED_H
 #define NVIM_CPP_API_GENERATED_H
 
@@ -55,3 +56,4 @@ namespace detail {
 } // namespace nvim
 
 #endif
+// clang-format on

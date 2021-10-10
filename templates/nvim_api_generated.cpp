@@ -1,3 +1,4 @@
+// clang-format off
 #include "nvim/generated/nvim_api_generated.h"
 
 #include "nvim/api.h"
@@ -188,4 +189,5 @@ std::vector<nvim::ui_events::generic_ui_event> parse_events(
 
 }
 
-} // namespace nvim
+}
+// clang-format on
