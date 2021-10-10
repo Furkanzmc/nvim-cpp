@@ -27,20 +27,22 @@ else()
   set(Boost_DEBUG OFF)
 endif()
 
-set(Boost_USE_STATIC_LIBS ON)
-set(BOOST_ROOT ${_BOOST_ROOT})
-find_package(Boost REQUIRED COMPONENTS filesystem)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  set(Boost_USE_STATIC_LIBS ON)
+  set(BOOST_ROOT ${_BOOST_ROOT})
+  find_package(Boost REQUIRED COMPONENTS filesystem)
+endif()
 
 set(TEST_LIBRARIES Catch2::Catch2WithMain nvim::cpp ${MSGPACK_LIBRARIES})
 link_directories(${Boost_LIBRARY_DIRS})
 
 set(TEST_INCLUDE_DIRS ${MSGPACK_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ../include/)
 
-set(TEST_COMPILE_DEFINITIONS )
+set(TEST_COMPILE_DEFINITIONS)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-  list(APPEND TEST_COMPILE_DEFINITIONS -D_WIN32 )
-  # NOTE: We need to have this here so that boost picks the correct io_context implementation.
-  # See: https://stackoverflow.com/a/41068811
+  list(APPEND TEST_COMPILE_DEFINITIONS -D_WIN32)
+  # NOTE: We need to have this here so that boost picks the correct io_context implementation. See:
+  # https://stackoverflow.com/a/41068811
   list(APPEND TEST_COMPILE_DEFINITIONS -D_WIN32_WINNT=0x0A00)
 endif()
 
