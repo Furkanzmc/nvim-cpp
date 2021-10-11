@@ -28,11 +28,12 @@ jobs:
       - name: Setup PR Branch
         run: git branch ${{ github.base_ref }} origin/${{ github.base_ref }}
 
-      - name: Run clang_format_diff Script
+      - name: Install clang-format
+        run: sudo apt update && sudo apt install clang-format-13 && echo "clang-format version is $(clang-format --version)"
+
+      - name: Run clang-format
         run: >
-          git diff github.base_ref --name-only | grep -v templates \
-          | grep -e "\.cpp$" -e "\.h$" | xargs clang-format -i --style file \
-          && git diff > clang_format.patch && git reset --hard
+          git diff ${{ github.base_ref }} --name-only | grep -v templates | grep -e "\.cpp$" -e "\.h$" | xargs clang-format -i --style file && git diff > clang_format.patch && git reset --hard
 
       - name: Detect clang_format Changes
         run: |
