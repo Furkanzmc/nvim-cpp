@@ -16,9 +16,6 @@ jobs:
     if: github.event_name == 'pull_request'
     strategy:
       fail-fast: false
-    env:
-      CLANG_FORMAT_DIFF: /usr/share/clang/clang-format-12/clang-format-diff.py
-      BRANCH_POINT: ${{ github.base_ref }}
     runs-on: ubuntu-latest
     steps:
       # https://github.com/actions/checkout/issues/416
@@ -32,7 +29,10 @@ jobs:
         run: git branch ${{ github.base_ref }} origin/${{ github.base_ref }}
 
       - name: Run clang_format_diff Script
-        run: scripts/clang-format.sh
+        run: >
+          git diff github.base_ref --name-only | grep -v templates \
+          | grep -e "\.cpp$" -e "\.h$" | xargs clang-format -i --style file \
+          && git diff > clang_format.patch && git reset --hard
 
       - name: Detect clang_format Changes
         run: |
