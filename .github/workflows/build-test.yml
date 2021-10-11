@@ -82,16 +82,16 @@ jobs:
           -DCMAKE_CXX_COMPILER=${{ matrix.cxx }}
 
       - name: Build
-        run: cmake --build ${{ github.workspace }}/build --parallel
+        run: cmake --build ${{ github.workspace }}/build --parallel 12
 
       - name: Test Linux
         if: ${{ startsWith(matrix.runner, 'ubuntu') }}
         uses: GabrielBB/xvfb-action@v1 # Required by Linux, no X11 $DISPLAY
         with:
           working-directory: ${{ github.workspace }}/build
-          run: cmake --build .\build\ --target check
+          run: cmake --build ./build/ --target check
 
       - name: Test macOS/Windows
         if: ${{ !startsWith(matrix.runner, 'ubuntu') }}
         working-directory: ${{ github.workspace }}
-        run: cmake --build .\build\ --target check
+        run: cmake --build ./build/ --target check
