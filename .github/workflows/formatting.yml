@@ -29,7 +29,7 @@ jobs:
         run: git branch ${{ github.base_ref }} origin/${{ github.base_ref }}
 
       - name: Install clang-format
-        run: sudo apt update && sudo apt install clang-format-12 && echo "clang-format version is $(clang-format --version)"
+        run: sudo apt update && sudo apt install llvm-13 && echo "clang-format version is $(clang-format --version)"
 
       - name: Run clang-format
         run: >
