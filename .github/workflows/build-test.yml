@@ -88,7 +88,7 @@ jobs:
         if: ${{ startsWith(matrix.runner, 'ubuntu') }}
         uses: GabrielBB/xvfb-action@v1 # Required by Linux, no X11 $DISPLAY
         with:
-          working-directory: ${{ github.workspace }}/build
+          working-directory: ${{ github.workspace }}
           run: cmake --build ./build/ --target check
 
       - name: Test macOS/Windows
