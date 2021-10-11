@@ -15,12 +15,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # - name: Linux
-          #   build_type: Debug
-          #   runner: ubuntu-latest
-          #   generator: Ninja
-          #   cc: gcc
-          #   cxx: g++
+          - name: Linux
+            build_type: Debug
+            runner: ubuntu-latest
+            generator: Ninja
+            cc: gcc
+            cxx: g++
 
           - name: MacOS
             build_type: Debug
@@ -41,12 +41,12 @@ jobs:
       #
       # Setup and Configuration
       #
-      # - name: Linux - Setup
-      #   if: ${{ startsWith(matrix.runner, 'ubuntu') }}
-      #   run: |
-      #     sudo add-apt-repository -y ppa:neovim-ppa/stable
-      #     sudo apt-get install -y neovim ninja-build
-      #     sudo apt-get update -y
+      - name: Linux - Setup
+        if: ${{ startsWith(matrix.runner, 'ubuntu') }}
+        run: |
+          sudo add-apt-repository -y ppa:neovim-ppa/stable
+          sudo apt-get install -y neovim ninja-build
+          sudo apt-get update -y
 
       - name: MacOS - Setup
         if: ${{ startsWith(matrix.runner, 'macos') }}
