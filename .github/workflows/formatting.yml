@@ -28,8 +28,11 @@ jobs:
       - name: Setup PR Branch
         run: git branch ${{ github.base_ref }} origin/${{ github.base_ref }}
 
+      - name: Add clang-format to apt
+        run: wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add - && sudo apt update
+
       - name: Install clang-format
-        run: wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add - && sudo apt install clang-format-13 && ln -sf /usr/bin/clang-format-13 /usr/local/bin && ln -sf /usr/bin/clang-format-diff-13 /usr/local/bin
+        run: sudo apt install clang-format-13 && ln -sf /usr/bin/clang-format-13 /usr/local/bin/clang-format && ln -sf /usr/bin/clang-format-diff-13 /usr/local/bin/clang-format-diff
 
       - name: Run clang-format
         run: >
