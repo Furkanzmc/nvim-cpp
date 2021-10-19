@@ -20,19 +20,20 @@
 using namespace boost;
 
 namespace {
-bool handle_events() noexcept
+bool handle_events()
 {
-    bool consumed{ false };
-    while (nvim::api::detail::has_event()) {
-        auto event = nvim::api::detail::consume_event();
+    const auto all_events = nvim::api::detail::get_all_events();
+    bool consumed{ true };
+    for (auto it = all_events.begin(); it != all_events.end(); it++) {
         std::visit(
           [&consumed](auto&& arg) {
+		  std::clog << arg.event_name << '\n';
               using T = std::decay_t<decltype(arg)>;
               if constexpr (std::is_same_v<T, nvim::ui_events::grid_line>) {
                   consumed = true;
               }
           },
-          event);
+          *it);
     }
 
     return consumed;
@@ -137,33 +138,33 @@ SCENARIO("An async API function with return value is called.",
 
 SCENARIO("Attach to a running nvim.", "[nvim::generated_api]")
 {
-    nvim_process nr;
-    nvim::types::connection connection{ std::move(
-      nvim::connect_tcp("127.0.0.1", 6667)) };
+  nvim_process nr;
+  nvim::types::connection connection{ std::move(
+    nvim::connect_tcp("127.0.0.1", 6667)) };
 
-    REQUIRE(connection.socket->is_open());
+  REQUIRE(connection.socket->is_open());
 
-    nvim::types::multimap_t options{
-        { "rgb", true },
-        { "ext_cmdline", true },
-        { "ext_hlstate", true },
-        { "ext_linegrid", true },
-        { "ext_messages", true },
-        { "ext_multigrid", true },
-        { "ext_popupmenu", true },
-        { "ext_tabline", true },
-        { "ext_termcolors", true },
-    };
-    nvim::api::nvim_ui_attach(connection, 100, 100, options);
+  nvim::types::multimap_t options{
+      { "rgb", true },
+      { "ext_cmdline", true },
+      { "ext_hlstate", true },
+      { "ext_linegrid", true },
+      { "ext_messages", true },
+      { "ext_multigrid", true },
+      { "ext_popupmenu", true },
+      { "ext_tabline", true },
+      { "ext_termcolors", true },
+  };
+  nvim::api::nvim_ui_attach(connection, 100, 100, options, [](const auto&){});
 
-    nvim::api::detail::start_loop(
-      connection,
-      [&connection]() {
-          if (handle_events()) {
-              nvim::api::detail::stop_loop(connection);
-          }
-      },
-      [](const auto& error_code) {
-          std::cerr << "Error: " << error_code.failed() << '\n';
-      });
+  nvim::api::detail::start_loop(
+    connection,
+    [&connection]() {
+        if (handle_events()) {
+            nvim::api::detail::stop_loop(connection);
+        }
+    },
+    [](const auto& error_code) {
+        std::cerr << "Error: " << error_code.failed() << '\n';
+    });
 }
