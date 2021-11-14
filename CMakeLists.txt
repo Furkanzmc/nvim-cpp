@@ -13,18 +13,20 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(NVIM_CPP_ENABLE_TESTS "Build and run tests." ON)
 
-set(PROJECT_SOURCES src/connection.cpp src/api.cpp src/response.cpp src/request.cpp
-                    src/private/pack_utils.cpp src/private/event_store.cpp)
+set(PROJECT_SOURCES
+    src/connection.cpp src/api.cpp src/response.cpp src/request.cpp
+    src/private/pack_utils.cpp src/private/event_store.cpp)
 
 find_package(Python3 COMPONENTS Interpreter)
 if(Python3_FOUND)
   execute_process(
-    COMMAND ${Python3_EXECUTABLE} -m pip install -r ${CMAKE_SOURCE_DIR}/scripts/requirements.txt
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND ${Python3_EXECUTABLE} -m pip install -r
+            ${PROJECT_SOURCE_DIR}/scripts/requirements.txt
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     OUTPUT_QUIET COMMAND_ECHO NONE)
   execute_process(
-    COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/generate_api.py
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/scripts/generate_api.py
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     OUTPUT_QUIET COMMAND_ECHO NONE)
 else()
   message(FATAL "Python executable is not found.")
@@ -60,7 +62,8 @@ endif()
 
 add_subdirectory(third-party/)
 
-target_include_directories(nvim-cpp PRIVATE ${MSGPACK_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
+target_include_directories(nvim-cpp PUBLIC ${MSGPACK_INCLUDE_DIRS}
+                                           ${Boost_INCLUDE_DIR})
 
 if(NVIM_CPP_ENABLE_TESTS)
   add_custom_target(
