@@ -1,0 +1,60 @@
+cmake_minimum_required(VERSION 3.19)
+
+set(nvim_cpp_known_comps static shared)
+set(nvim_cpp_comp_static NO)
+set(nvim_cpp_comp_shared NO)
+
+foreach(nvim_cpp_comp IN LISTS ${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS)
+  if(nvim_cpp_comp IN_LIST nvim_cpp_known_comps)
+    set(nvim_cpp_comp_${nvim_cpp_comp} YES)
+  else()
+    set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE
+        "nvim-cpp does not recognize component `${nvim_cpp_comp}`.")
+    set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
+    return()
+  endif()
+endforeach()
+
+if(nvim_cpp_comp_static AND nvim_cpp_comp_shared)
+  set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE
+      "nvim-cpp `static` and `shared` components are mutually exclusive.")
+  set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
+  return()
+endif()
+
+set(nvim_cpp_static_targets
+    "${CMAKE_CURRENT_LIST_DIR}/nvim-cpp-static-targets.cmake")
+set(nvim_cpp_shared_targets
+    "${CMAKE_CURRENT_LIST_DIR}/nvim-cpp-shared-targets.cmake")
+
+macro(nvim_cpp_load_targets type)
+  if(NOT EXISTS "${nvim_cpp_${type}_targets}")
+    set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE
+        "nvim-cpp `${type}` libraries were requested but not found.")
+    set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
+    return()
+  endif()
+  include("${nvim_cpp_${type}_targets}")
+endmacro()
+
+if(nvim_cpp_comp_static)
+  nvim_cpp_load_targets(static)
+elseif(nvim_cpp_comp_shared)
+  nvim_cpp_load_targets(shared)
+elseif(DEFINED nvim_cpp_SHARED_LIBS AND nvim_cpp_SHARED_LIBS)
+  nvim_cpp_load_targets(shared)
+elseif(DEFINED nvim_cpp_SHARED_LIBS AND NOT nvim_cpp_SHARED_LIBS)
+  nvim_cpp_load_targets(static)
+elseif(BUILD_SHARED_LIBS)
+  if(EXISTS "${nvim_cpp_shared_targets}")
+    nvim_cpp_load_targets(shared)
+  else()
+    nvim_cpp_load_targets(static)
+  endif()
+else()
+  if(EXISTS "${nvim_cpp_static_targets}")
+    nvim_cpp_load_targets(static)
+  else()
+    nvim_cpp_load_targets(shared)
+  endif()
+endif()

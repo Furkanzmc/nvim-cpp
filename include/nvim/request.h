@@ -3,10 +3,11 @@
 
 #include "nvim/types.h"
 #include "nvim/defs.h"
+#include "nvim/export.h"
 
 namespace nvim::types {
 
-struct request {
+struct NVIM_CPP_EXPORT request {
     struct _args {
         std::uint32_t count;
         msgpack::sbuffer& buffer;
@@ -21,54 +22,62 @@ struct request {
     _args args{ 0, buffer };
 };
 
-[[maybe_unused]] request::_args& operator<<(request::_args& os,
-                                            int value) NVIM_NOEXCEPT;
-
-[[maybe_unused]] request::_args& operator<<(request::_args& os,
-                                            float value) NVIM_NOEXCEPT;
-
-[[maybe_unused]] request::_args& operator<<(request::_args& os,
-                                            double value) NVIM_NOEXCEPT;
-
-[[maybe_unused]] request::_args& operator<<(request::_args& os,
-                                            const std::string& value)
+NVIM_CPP_EXPORT [[maybe_unused]] request::_args& operator<<(request::_args& os,
+                                                            int value)
   NVIM_NOEXCEPT;
 
-[[maybe_unused]] request::_args& operator<<(request::_args& os,
-                                            std::byte value) NVIM_NOEXCEPT;
-
-[[maybe_unused]] request::_args& operator<<(request::_args& os,
-                                            char value) NVIM_NOEXCEPT;
-
-[[maybe_unused]] request::_args& operator<<(request::_args& os,
-                                            integer_t value) NVIM_NOEXCEPT;
-
-[[maybe_unused]] request::_args& operator<<(request::_args& os,
-                                            uinteger_t value) NVIM_NOEXCEPT;
-
-[[maybe_unused]] request::_args& operator<<(request::_args& os,
-                                            const object_t& value)
+NVIM_CPP_EXPORT [[maybe_unused]] request::_args& operator<<(request::_args& os,
+                                                            float value)
   NVIM_NOEXCEPT;
 
-[[maybe_unused]] request::_args& operator<<(request::_args& os,
-                                            const array_t& value) NVIM_NOEXCEPT;
-
-[[maybe_unused]] request::_args& operator<<(request::_args& os,
-                                            const std::vector<char>& value)
+NVIM_CPP_EXPORT [[maybe_unused]] request::_args& operator<<(request::_args& os,
+                                                            double value)
   NVIM_NOEXCEPT;
 
-[[maybe_unused]] request::_args& operator<<(request::_args& os,
-                                            const nvim::types::map_t& value)
+NVIM_CPP_EXPORT [[maybe_unused]] request::_args& operator<<(
+  request::_args& os,
+  const std::string& value) NVIM_NOEXCEPT;
+
+NVIM_CPP_EXPORT [[maybe_unused]] request::_args& operator<<(request::_args& os,
+                                                            std::byte value)
   NVIM_NOEXCEPT;
 
-[[maybe_unused]] request::_args& operator<<(request::_args& os,
-                                            const nvim::types::map_t& value)
+NVIM_CPP_EXPORT [[maybe_unused]] request::_args& operator<<(request::_args& os,
+                                                            char value)
   NVIM_NOEXCEPT;
+
+NVIM_CPP_EXPORT [[maybe_unused]] request::_args& operator<<(request::_args& os,
+                                                            integer_t value)
+  NVIM_NOEXCEPT;
+
+NVIM_CPP_EXPORT [[maybe_unused]] request::_args& operator<<(request::_args& os,
+                                                            uinteger_t value)
+  NVIM_NOEXCEPT;
+
+NVIM_CPP_EXPORT [[maybe_unused]] request::_args& operator<<(
+  request::_args& os,
+  const object_t& value) NVIM_NOEXCEPT;
+
+NVIM_CPP_EXPORT [[maybe_unused]] request::_args& operator<<(
+  request::_args& os,
+  const array_t& value) NVIM_NOEXCEPT;
+
+NVIM_CPP_EXPORT [[maybe_unused]] request::_args& operator<<(
+  request::_args& os,
+  const std::vector<char>& value) NVIM_NOEXCEPT;
+
+NVIM_CPP_EXPORT [[maybe_unused]] request::_args& operator<<(
+  request::_args& os,
+  const nvim::types::map_t& value) NVIM_NOEXCEPT;
+
+NVIM_CPP_EXPORT [[maybe_unused]] request::_args& operator<<(
+  request::_args& os,
+  const nvim::types::map_t& value) NVIM_NOEXCEPT;
 
 template<typename T>
-[[maybe_unused]] request::_args& operator<<(request::_args& os,
-                                            const std::vector<T>& value)
-  NVIM_NOEXCEPT
+NVIM_CPP_EXPORT [[maybe_unused]] request::_args& operator<<(
+  request::_args& os,
+  const std::vector<T>& value) NVIM_NOEXCEPT
 {
     msgpack::packer<msgpack::sbuffer> pk{ os.buffer };
     const auto value_size = static_cast<std::uint32_t>(value.size());

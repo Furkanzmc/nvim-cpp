@@ -3,12 +3,13 @@
 
 #include "nvim/types.h"
 #include "nvim/defs.h"
+#include "nvim/export.h"
 
 #include <string>
 
 namespace nvim::types {
 
-struct response {
+struct NVIM_CPP_EXPORT response {
     struct error {
         const std::string message{};
         const std::int64_t code{ -1 };
