@@ -1,7 +1,5 @@
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# add_dependencies(check connection_tests)
-
 find_program(NVIM_PATH nvim REQUIRED)
 add_compile_definitions(NVIM_PATH="${NVIM_PATH}")
 
@@ -21,7 +19,7 @@ list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(CTest)
 include(Catch)
 
-set(TEST_LIBRARIES Catch2::Catch2WithMain nvim::cpp ${MSGPACK_LIBRARIES})
+set(TEST_LIBRARIES Catch2::Catch2WithMain nvim-cpp::nvim-cpp ${MSGPACK_LIBRARIES})
 set(TEST_INCLUDE_DIRS ${MSGPACK_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ../include/)
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")

@@ -19,7 +19,8 @@ class type_error;
 }
 }
 
-class nvim::exceptions::error_category : public boost::system::error_category {
+class NVIM_CPP_EXPORT nvim::exceptions::error_category
+  : public boost::system::error_category {
 public:
     error_category(std::string name, std::string message)
       : m_name{ std::move(name) }
@@ -42,7 +43,7 @@ private:
     const std::string m_message;
 };
 
-class nvim::exceptions::base_error : public std::exception {
+class NVIM_CPP_EXPORT nvim::exceptions::base_error : public std::exception {
 public:
     base_error(boost::system::error_code ec)
       : std::exception{}
@@ -73,7 +74,8 @@ private:
     std::string m_message;
 };
 
-class nvim::exceptions::connection_error : public nvim::exceptions::base_error {
+class NVIM_CPP_EXPORT nvim::exceptions::connection_error
+  : public nvim::exceptions::base_error {
 public:
     connection_error(boost::system::error_code ec)
       : base_error{ std::move(ec) }
@@ -81,7 +83,8 @@ public:
     }
 };
 
-class nvim::exceptions::request_error : public nvim::exceptions::base_error {
+class NVIM_CPP_EXPORT nvim::exceptions::request_error
+  : public nvim::exceptions::base_error {
 public:
     request_error(boost::system::error_code ec)
       : base_error{ std::move(ec) }
@@ -89,7 +92,8 @@ public:
     }
 };
 
-class nvim::exceptions::timeout_error : public nvim::exceptions::base_error {
+class NVIM_CPP_EXPORT nvim::exceptions::timeout_error
+  : public nvim::exceptions::base_error {
 public:
     timeout_error(std::string msg = "Request timed out.")
       : base_error{ std::move(msg) }
@@ -97,7 +101,8 @@ public:
     }
 };
 
-class nvim::exceptions::bad_response : public nvim::exceptions::base_error {
+class NVIM_CPP_EXPORT nvim::exceptions::bad_response
+  : public nvim::exceptions::base_error {
 public:
     bad_response(std::string msg)
       : base_error{ std::move(msg) }
@@ -120,7 +125,8 @@ private:
     std::int64_t m_error_code;
 };
 
-class nvim::exceptions::type_error : public nvim::exceptions::base_error {
+class NVIM_CPP_EXPORT nvim::exceptions::type_error
+  : public nvim::exceptions::base_error {
 public:
     type_error(std::string msg)
       : base_error{ std::move(msg) }
